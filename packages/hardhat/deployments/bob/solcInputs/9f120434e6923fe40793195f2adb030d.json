@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/YourContract.sol": {
+      "content": "// SPDX-License-Identifier: GPL-3.0\npragma solidity ^0.8.4;\n\ncontract YourContract {\n\t// The keyword \"public\" makes variables\n\t// accessible from other contracts\n\taddress public minter;\n\tmapping(address => uint) public balances;\n\n\t// Events allow clients to react to specific\n\t// contract changes you declare\n\tevent Sent(address from, address to, uint amount);\n\n\t// Constructor code is only run when the contract\n\t// is created\n\tconstructor(address _minter) {\n\t\tminter = _minter;\n\t}\n\n\t// Sends an amount of newly created coins to an address\n\t// Can only be called by the contract creator\n\tfunction mint(address receiver, uint amount) public {\n\t\trequire(msg.sender == minter);\n\t\tbalances[receiver] += amount;\n\t}\n\n\t// Errors allow you to provide information about\n\t// why an operation failed. They are returned\n\t// to the caller of the function.\n\terror InsufficientBalance(uint requested, uint available);\n\n\t// Sends an amount of existing coins\n\t// from any caller to an address\n\tfunction send(address receiver, uint amount) public {\n\t\tif (amount > balances[msg.sender])\n\t\t\trevert InsufficientBalance({\n\t\t\t\trequested: amount,\n\t\t\t\tavailable: balances[msg.sender]\n\t\t\t});\n\n\t\tbalances[msg.sender] -= amount;\n\t\tbalances[receiver] += amount;\n\t\temit Sent(msg.sender, receiver, amount);\n\t}\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
